@@ -41,6 +41,7 @@ type ConfigDraftCtx = ConfigDraftState & {
   saveAllVersion: number;
   setDraft: (path: string, input: string, value?: unknown) => void;
   clearDraft: (path: string) => void;
+  clearDraftIfInput: (path: string, input: string) => void;
   setComment: (path: string, comment: string) => void;
   clearComment: (path: string) => void;
   stageTombstone: (path: string) => void;
@@ -73,6 +74,15 @@ export function ConfigDraftProvider({ children }: { children: ReactNode }) {
   const clearDraft = useCallback((path: string) => {
     setDrafts((prev) => {
       if (!(path in prev)) return prev;
+      const next = { ...prev };
+      delete next[path];
+      return next;
+    });
+  }, []);
+
+  const clearDraftIfInput = useCallback((path: string, input: string) => {
+    setDrafts((prev) => {
+      if (prev[path]?.input !== input) return prev;
       const next = { ...prev };
       delete next[path];
       return next;
@@ -288,6 +298,7 @@ export function ConfigDraftProvider({ children }: { children: ReactNode }) {
       saveAllVersion,
       setDraft,
       clearDraft,
+      clearDraftIfInput,
       setComment,
       clearComment,
       stageTombstone,
@@ -305,6 +316,7 @@ export function ConfigDraftProvider({ children }: { children: ReactNode }) {
       saveAllVersion,
       setDraft,
       clearDraft,
+      clearDraftIfInput,
       setComment,
       clearComment,
       stageTombstone,
